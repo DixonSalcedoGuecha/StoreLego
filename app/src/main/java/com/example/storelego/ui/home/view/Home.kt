@@ -1,6 +1,7 @@
 package com.example.storelego.ui.home.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,13 +22,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.storelego.model.Products
 import com.example.storelego.model.ProductsResponse
 import com.example.storelego.ui.home.viewmodel.HomeViewModel
+import com.example.storelego.ui.navigation.Routes
 
 @Composable
-fun Home(homeViewModel: HomeViewModel){
+fun Home(homeViewModel: HomeViewModel, navigate: NavController){
     val productsState: ProductsResponse? by homeViewModel.productsLiveData.observeAsState()
 
     Column (
@@ -38,9 +41,9 @@ fun Home(homeViewModel: HomeViewModel){
         Text("Lista de productos", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
 
         productsState?.let { productsResponse ->
-            LazyColumn {
+            LazyColumn  {
                 items(1) { product ->
-                   productsResponse.products.map {  ProductItem(product = it) }
+                   productsResponse.products.map {  ProductItem(product = it, navigate = navigate) }
                 }
             }
         }
@@ -48,11 +51,13 @@ fun Home(homeViewModel: HomeViewModel){
 }
 
 @Composable
-fun ProductItem(product: Products) {
+fun ProductItem(product: Products, navigate: NavController) {
     Row(
+
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable{ navigate.navigate(Routes.DetailScreen.route)},
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(

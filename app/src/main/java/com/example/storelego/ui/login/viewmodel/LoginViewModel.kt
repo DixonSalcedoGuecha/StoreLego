@@ -1,4 +1,4 @@
-package com.example.storelego.ui.login.ui
+package com.example.storelego.ui.login.viewmodel
 
 import android.util.Log
 import android.util.Patterns

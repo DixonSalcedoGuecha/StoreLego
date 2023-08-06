@@ -1,4 +1,4 @@
-package com.example.storelego.ui.login.ui
+package com.example.storelego.ui.login.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.storelego.ui.login.viewmodel.LoginViewModel
 import com.example.storelego.ui.navigation.Routes
 import com.example.storelego.ui.theme.Purple40
 

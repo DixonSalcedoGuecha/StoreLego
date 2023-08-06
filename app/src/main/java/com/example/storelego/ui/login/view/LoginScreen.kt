@@ -1,4 +1,4 @@
-package com.example.storelego.ui.login.ui
+package com.example.storelego.ui.login.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -44,12 +44,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.storelego.ui.theme.Purple40
 import com.example.storelego.R
+import com.example.storelego.ui.login.viewmodel.LoginViewModel
 import com.example.storelego.ui.navigation.Routes
 
 
 @ExperimentalMaterial3Api
 @Composable
-fun LoginScreen(viewModel: LoginViewModel ,navigate: NavController) {
+fun LoginScreen(viewModel: LoginViewModel, navigate: NavController) {
 
 
     Box(modifier = Modifier
