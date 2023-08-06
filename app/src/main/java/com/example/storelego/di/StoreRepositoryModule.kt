@@ -12,5 +12,5 @@ import javax.inject.Singleton
 abstract class StoreRepositoryModule {
     @Binds
     @Singleton
-    abstract fun recipeRepository(repo: ProductsRepositoryImp): ProductsRepository
+    abstract fun storeRepository(repo: ProductsRepositoryImp): ProductsRepository
 }

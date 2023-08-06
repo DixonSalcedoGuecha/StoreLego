@@ -1,6 +1,7 @@
 package com.example.storelego.di
 
-import com.example.storelego.datasource.RestDataSource
+import com.example.storelego.datasource.RestDetailDataSource
+import com.example.storelego.datasource.RestProductDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,7 +31,12 @@ class DataStoreModel {
 
     @Singleton
     @Provides
-    fun restDataSource(retrofit: Retrofit): RestDataSource =
-        retrofit.create(RestDataSource::class.java)
+    fun restProductsDataSource(retrofit: Retrofit): RestProductDataSource =
+        retrofit.create(RestProductDataSource::class.java)
+
+    @Singleton
+    @Provides
+    fun restDetailDataSource(retrofit: Retrofit): RestDetailDataSource =
+        retrofit.create(RestDetailDataSource::class.java)
 
 }

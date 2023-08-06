@@ -1,5 +1,6 @@
 package com.example.storelego.ui.home.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.storelego.model.ProductsResponse
 import com.example.storelego.repository.ProductsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,23 +18,6 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val productsRepo: ProductsRepository
 ) :ViewModel() {
-
-   /* private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private var listProducts: ProductsResponse = ProductsResponse(products = emptyList())
-
-    fun getAllProducts(): ProductsResponse {
-
-        viewModelScope.launch(Dispatchers.IO) {
-
-            listProducts = productsRepo.getAllProducts()
-
-        }
-
-
-        return listProducts
-    }*/
 
     private val _productsLiveData: MutableLiveData<ProductsResponse> = MutableLiveData()
     val productsLiveData: LiveData<ProductsResponse> = _productsLiveData
@@ -42,9 +27,16 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getAllProducts() {
+
         viewModelScope.launch(Dispatchers.IO) {
-            val response = productsRepo.getAllProducts()
-            _productsLiveData.postValue(response)
+            try {
+                val response = productsRepo.getAllProducts()
+                println(response)
+                _productsLiveData.postValue(response)
+            } catch (e : Exception){
+                Log.e("Exception", "getAllProducts: ${e.printStackTrace()} ", )
+            }
+
         }
     }
 }

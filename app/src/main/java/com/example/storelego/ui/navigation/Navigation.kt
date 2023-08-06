@@ -10,6 +10,8 @@ import com.example.storelego.ui.screens.Screen
 import com.example.storelego.ui.home.view.Home
 import com.example.storelego.ui.home.viewmodel.HomeViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.storelego.ui.detailproduct.view.DetailScreen
 import com.example.storelego.ui.detailproduct.viewmodel.DetailViewModel
 import com.example.storelego.ui.login.view.LoginScreen
@@ -44,8 +46,10 @@ fun Navigation(navController: NavHostController = rememberNavController(),
                 Home(homeViewModel = homeViewModel, navigate = navController)
             }
 
-            composable(Routes.DetailScreen.route) {
-                DetailScreen(detailViewModel = detailViewModel)
+            composable(Routes.DetailScreen.route + "/{id}", arguments = listOf(navArgument(name = "id"){
+                type = NavType.IntType
+            })) {
+                DetailScreen(detailViewModel = detailViewModel,it.arguments!!.getInt("id"),  navigate =  navController)
             }
         }
 
