@@ -3,6 +3,7 @@ package com.example.storelego.ui.shoppingcart.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,8 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +31,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.storelego.R
@@ -68,27 +74,61 @@ fun ShoppingCartScreen(shoppingCartViewModel: ShoppingCartViewModel, navigate: N
             )
         }, content = { innerPadding ->
 
-            ShoppingCartContent(innerPadding, productsBdState, navigate)
+            ShoppingCartContent(innerPadding, productsBdState, navigate,shoppingCartViewModel)
 
         }
     )
 }
 
 @Composable
-fun ShoppingCartContent(innerPadding: PaddingValues, productsBdState: ProductsResponse?, navigate: NavController) {
+fun ShoppingCartContent(
+    innerPadding: PaddingValues,
+    productsBdState: ProductsResponse?,
+    navigate: NavController,
+    shoppingCartViewModel: ShoppingCartViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding),
         verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         productsBdState?.let { productsResponse ->
-            LazyColumn {
+            LazyColumn(modifier = Modifier.weight(0.85f)) {
                 items(productsResponse.products) { product ->
                     ShoppingProductItem(product = product, navigate = navigate)
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.weight(0.15f))
+        DataShopping(productsBdState?.products ?: mutableListOf())
+        Spacer(modifier = Modifier.height(16.dp))
+        ButtonBuyProducts(shoppingCartViewModel, productsBdState?.products ?: mutableListOf())
+    }
+}
+
+@Composable
+fun DataShopping(products: MutableList<Products>) {
+    var total: Int = 0
+    for (i in 0 until products.size){
+        total += products[i].unitPrice
+    }
+    Text(text = "Total Compra = $ $total pesos", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold), modifier = Modifier.padding(20.dp))
+}
+
+@Composable
+fun ButtonBuyProducts(shoppingCartViewModel: ShoppingCartViewModel, products: MutableList<Products>) {
+    Box(modifier = Modifier.padding(30.dp, 0.dp, 30.dp, 0.dp))  {
+        Button(
+            onClick = {  },
+            shape = RoundedCornerShape(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp), enabled = products.size > 0
+        ) {
+            Text(text = "Comprar productos")
         }
     }
 }

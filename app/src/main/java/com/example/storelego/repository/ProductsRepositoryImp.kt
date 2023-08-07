@@ -30,9 +30,7 @@ class ProductsRepositoryImp  @Inject constructor(
 
     override suspend fun getAllProductsBd(): ProductsResponse {
         var productsList : ProductsResponse = ProductsResponse()
-        println("Datos de la BD Dixon 1 ${productsDao.getAllProductsBD()}")
         productsDao.getAllProductsBD().map { productEntity ->
-            println("Datos de la BD Dixon 2 $productEntity")
             productsList.products.add (  productEntity.toProduct() )
         }
 

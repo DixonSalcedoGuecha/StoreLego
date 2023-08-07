@@ -25,7 +25,6 @@ class ShoppingCartViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = productsRepo.getAllProductsBd()
-                println("Datos de la BD $response")
                 _productsBdLiveData.postValue(response)
             } catch (e : Exception){
                 Log.e("Exception", "getAllProducts: ${e.printStackTrace()} ", )
