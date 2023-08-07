@@ -17,6 +17,8 @@ import com.example.storelego.ui.detailproduct.viewmodel.DetailViewModel
 import com.example.storelego.ui.login.view.LoginScreen
 import com.example.storelego.ui.login.viewmodel.LoginViewModel
 import com.example.storelego.ui.login.view.SingUpScreen
+import com.example.storelego.ui.shoppingcart.view.ShoppingCartScreen
+import com.example.storelego.ui.shoppingcart.viewmodel.ShoppingCartViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +26,8 @@ import com.google.firebase.auth.FirebaseAuth
 fun Navigation(navController: NavHostController = rememberNavController(),
                loginViewModel: LoginViewModel = hiltViewModel(),
                homeViewModel: HomeViewModel = hiltViewModel(),
-               detailViewModel: DetailViewModel = hiltViewModel()
+               detailViewModel: DetailViewModel = hiltViewModel(),
+               shoppingCartViewModel: ShoppingCartViewModel = hiltViewModel()
 ){
     Screen {
         NavHost(navController = navController, startDestination = if(FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) { Routes.LoginScreen.route} else { Routes.HomeScreen.route} ) {
@@ -50,6 +53,10 @@ fun Navigation(navController: NavHostController = rememberNavController(),
                 type = NavType.IntType
             })) {
                 DetailScreen(detailViewModel = detailViewModel,it.arguments!!.getInt("id"),  navigate =  navController)
+            }
+
+            composable(Routes.ShoppingCartScreen.route) {
+                ShoppingCartScreen(shoppingCartViewModel = shoppingCartViewModel, navigate = navController)
             }
         }
 

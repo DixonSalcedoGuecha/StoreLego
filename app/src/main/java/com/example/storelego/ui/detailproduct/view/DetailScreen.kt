@@ -1,11 +1,13 @@
 package com.example.storelego.ui.detailproduct.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -25,12 +27,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.storelego.R
 import com.example.storelego.model.DetailResponse
 import com.example.storelego.ui.detailproduct.viewmodel.DetailViewModel
 
@@ -38,6 +42,7 @@ import com.example.storelego.ui.detailproduct.viewmodel.DetailViewModel
 @Composable
 fun DetailScreen(detailViewModel: DetailViewModel, id: Int, navigate: NavHostController) {
     Scaffold(
+        modifier = Modifier.padding(20.dp),
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -49,16 +54,13 @@ fun DetailScreen(detailViewModel: DetailViewModel, id: Int, navigate: NavHostCon
 
                 actions = {
 
-                    IconButton(onClick = {  }) {
-                        Icon(
-                            imageVector = Icons.Outlined.AccountCircle,
-                            contentDescription = "Volver atras"
-                        )
-                    }
                     IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Carrito de compras"
+                        Image(
+                            painter = painterResource(R.drawable.ic_shoppin_cart_purple),
+                            contentDescription = "Carrito de compras",
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp)
                         )
                     }
                 }
@@ -87,7 +89,7 @@ fun Detail(detailViewModel: DetailViewModel, productId: Int?, innerPadding: Padd
     )
     {
 
-        LazyColumn {
+        LazyColumn (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             items(1) {
                 Text(
                     text = detailState?.name.toString(),

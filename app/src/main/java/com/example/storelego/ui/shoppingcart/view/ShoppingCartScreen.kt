@@ -1,4 +1,4 @@
-package com.example.storelego.ui.home.view
+package com.example.storelego.ui.shoppingcart.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,8 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,32 +31,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.storelego.R
 import com.example.storelego.model.Products
 import com.example.storelego.model.ProductsResponse
-import com.example.storelego.ui.home.viewmodel.HomeViewModel
 import com.example.storelego.ui.navigation.Routes
-import com.example.storelego.R
+import com.example.storelego.ui.shoppingcart.viewmodel.ShoppingCartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(homeViewModel: HomeViewModel, navigate: NavController) {
-    val productsState: ProductsResponse? by homeViewModel.productsLiveData.observeAsState()
+fun ShoppingCartScreen(shoppingCartViewModel: ShoppingCartViewModel, navigate: NavController) {
+    val productsBdState: ProductsResponse? by shoppingCartViewModel.productsBdLiveData.observeAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Lista de productos") },
-                actions = {
-                    IconButton(onClick = { navigate.navigate(Routes.LoginScreen.route) }) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_exit_session),
-                            contentDescription = "Cerrar Sesion",
-                            modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-                        )
+                navigationIcon = {
+                    IconButton(onClick = { navigate.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Volver atrás")
                     }
-                    IconButton(onClick = { navigate.navigate(Routes.ShoppingCartScreen.route) }) {
+                },
+                title = { Text(text = "Carrito de compras") },
+                actions = {
+
+                    IconButton(onClick = { }) {
                         Image(
                             painter = painterResource(R.drawable.ic_shoppin_cart_purple),
                             contentDescription = "Carrito de compras",
@@ -70,18 +66,14 @@ fun Home(homeViewModel: HomeViewModel, navigate: NavController) {
             )
         }, content = { innerPadding ->
 
-            ProductContent(innerPadding, productsState, navigate)
+            ShoppingCartContent(innerPadding, productsBdState, navigate)
 
         }
     )
 }
 
 @Composable
-fun ProductContent(
-    innerPadding: PaddingValues,
-    productsState: ProductsResponse?,
-    navigate: NavController
-) {
+fun ShoppingCartContent(innerPadding: PaddingValues, productsBdState: ProductsResponse?, navigate: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,19 +81,18 @@ fun ProductContent(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        productsState?.let { productsResponse ->
+        productsBdState?.let { productsResponse ->
             LazyColumn {
                 items(productsResponse.products) { product ->
-                    ProductItem(product = product, navigate = navigate)
+                    ShoppingProductItem(product = product, navigate = navigate)
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun ProductItem(product: Products, navigate: NavController) {
+fun ShoppingProductItem(product: Products, navigate: NavController) {
     Row(
 
         modifier = Modifier
@@ -128,7 +119,7 @@ fun ProductItem(product: Products, navigate: NavController) {
         }
 
         Image(
-            painter = painterResource(R.drawable.ic_add_product),
+            painter = painterResource(R.drawable.ic_remove_product),
             contentDescription = "Carrito de compras",
             modifier = Modifier
                 .fillMaxWidth()
@@ -136,8 +127,5 @@ fun ProductItem(product: Products, navigate: NavController) {
                 .height(30.dp), alignment = Alignment.BottomEnd
         )
 
-
     }
-
-
 }

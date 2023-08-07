@@ -46,6 +46,9 @@ import com.example.storelego.ui.theme.Purple40
 import com.example.storelego.R
 import com.example.storelego.ui.login.viewmodel.LoginViewModel
 import com.example.storelego.ui.navigation.Routes
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 @ExperimentalMaterial3Api
