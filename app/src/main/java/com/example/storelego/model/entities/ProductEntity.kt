@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.storelego.model.Products
 
-@Entity(tableName = "products")
+@Entity(tableName = "products_table")
 data class ProductEntity (
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     @ColumnInfo(name = "idProduct") var idProduct: Int,

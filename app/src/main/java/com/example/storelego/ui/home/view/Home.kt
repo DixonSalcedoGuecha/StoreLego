@@ -22,6 +22,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -99,6 +102,7 @@ fun ProductContent(
 
 @Composable
 fun ProductItem(product: Products, navigate: NavController, homeViewModel: HomeViewModel) {
+    var isCartIconVisible by remember { mutableStateOf(true) }
     Row(
 
         modifier = Modifier
@@ -124,14 +128,22 @@ fun ProductItem(product: Products, navigate: NavController, homeViewModel: HomeV
             Text(text = "Stock: ${product.stock}")
         }
 
+        val cartIcon = if (isCartIconVisible) {
+            painterResource(R.drawable.ic_add_product)
+        } else {
+            painterResource(R.drawable.ic_check_product)
+        }
+
         Image(
-            painter = painterResource(R.drawable.ic_add_product),
+            painter = cartIcon,
             contentDescription = "Carrito de compras",
             modifier = Modifier
                 .fillMaxWidth()
                 .width(30.dp)
                 .height(30.dp)
-                .clickable { homeViewModel.getInsertProduct(product) }
+                .clickable {
+                    homeViewModel.getInsertProduct(product)
+                    isCartIconVisible = !isCartIconVisible }
             , alignment = Alignment.BottomEnd
         )
 

@@ -7,7 +7,7 @@ import com.example.storelego.model.Products
 import com.example.storelego.model.ProductsResponse
 import com.example.storelego.model.dao.ProductsDao
 import com.example.storelego.model.entities.toProductEntity
-import com.example.storelego.model.entities.toProductsResponse
+import com.example.storelego.model.toProduct
 import javax.inject.Inject
 
 
@@ -30,8 +30,10 @@ class ProductsRepositoryImp  @Inject constructor(
 
     override suspend fun getAllProductsBd(): ProductsResponse {
         var productsList : ProductsResponse = ProductsResponse()
+        println("Datos de la BD Dixon 1 ${productsDao.getAllProductsBD()}")
         productsDao.getAllProductsBD().map { productEntity ->
-            productsList.products.map { it.toProductEntity() }
+            println("Datos de la BD Dixon 2 $productEntity")
+            productsList.products.add (  productEntity.toProduct() )
         }
 
         return productsList
