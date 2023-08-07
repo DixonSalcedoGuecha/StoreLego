@@ -39,4 +39,15 @@ class HomeViewModel @Inject constructor(
 
         }
     }
+
+    fun getInsertProduct(product: Products){
+        viewModelScope.launch(Dispatchers.IO ) {
+            try {
+                productsRepo.getInsertProduct(product)
+
+            } catch (e:Exception) {
+                Log.e("Insert Produt BD", "getInsertProduct: ${e.printStackTrace()}", )
+            }
+        }
+    }
 }

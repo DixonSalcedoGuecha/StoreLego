@@ -1,10 +1,15 @@
 package com.example.storelego.di
 
+import android.content.Context
+import androidx.room.Room
+import com.example.storelego.datasource.DbBuyDataSource
 import com.example.storelego.datasource.RestDetailDataSource
 import com.example.storelego.datasource.RestProductDataSource
+import com.example.storelego.model.dao.ProductsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,5 +43,17 @@ class DataStoreModel {
     @Provides
     fun restDetailDataSource(retrofit: Retrofit): RestDetailDataSource =
         retrofit.create(RestDetailDataSource::class.java)
+
+    @Singleton
+    @Provides
+    fun dbBuyDataSource(@ApplicationContext context: Context): DbBuyDataSource {
+        return Room.databaseBuilder(context,DbBuyDataSource::class.java, "shopping_cart_database")
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun recipeDao(db: DbBuyDataSource): ProductsDao = db.productsDao()
 
 }

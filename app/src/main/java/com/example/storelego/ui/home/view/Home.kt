@@ -14,11 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -70,7 +66,7 @@ fun Home(homeViewModel: HomeViewModel, navigate: NavController) {
             )
         }, content = { innerPadding ->
 
-            ProductContent(innerPadding, productsState, navigate)
+            ProductContent(innerPadding, productsState, navigate, homeViewModel)
 
         }
     )
@@ -80,7 +76,8 @@ fun Home(homeViewModel: HomeViewModel, navigate: NavController) {
 fun ProductContent(
     innerPadding: PaddingValues,
     productsState: ProductsResponse?,
-    navigate: NavController
+    navigate: NavController,
+    homeViewModel: HomeViewModel
 ) {
     Column(
         modifier = Modifier
@@ -92,7 +89,7 @@ fun ProductContent(
         productsState?.let { productsResponse ->
             LazyColumn {
                 items(productsResponse.products) { product ->
-                    ProductItem(product = product, navigate = navigate)
+                    ProductItem(product = product, navigate = navigate, homeViewModel = homeViewModel)
                 }
             }
         }
@@ -101,7 +98,7 @@ fun ProductContent(
 
 
 @Composable
-fun ProductItem(product: Products, navigate: NavController) {
+fun ProductItem(product: Products, navigate: NavController, homeViewModel: HomeViewModel) {
     Row(
 
         modifier = Modifier
@@ -133,7 +130,9 @@ fun ProductItem(product: Products, navigate: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .width(30.dp)
-                .height(30.dp), alignment = Alignment.BottomEnd
+                .height(30.dp)
+                .clickable { homeViewModel.getInsertProduct(product) }
+            , alignment = Alignment.BottomEnd
         )
 
 

@@ -40,6 +40,8 @@ import com.example.storelego.ui.shoppingcart.viewmodel.ShoppingCartViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingCartScreen(shoppingCartViewModel: ShoppingCartViewModel, navigate: NavController) {
+
+    shoppingCartViewModel.getAllProducts()
     val productsBdState: ProductsResponse? by shoppingCartViewModel.productsBdLiveData.observeAsState()
 
     Scaffold(
