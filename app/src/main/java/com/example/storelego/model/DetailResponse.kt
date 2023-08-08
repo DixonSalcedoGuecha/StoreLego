@@ -10,3 +10,5 @@ data class DetailResponse (
     val image: String,
     val description: String
 )
+
+fun DetailResponse.toProduct() = Products(id, name, unitPrice, stock, image)

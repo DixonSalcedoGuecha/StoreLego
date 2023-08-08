@@ -39,6 +39,7 @@ import com.example.storelego.model.ProductsResponse
 import com.example.storelego.ui.home.viewmodel.HomeViewModel
 import com.example.storelego.ui.navigation.Routes
 import com.example.storelego.R
+import com.example.storelego.model.toProduct
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -68,7 +69,8 @@ fun Home(homeViewModel: HomeViewModel, navigate: NavController) {
                 actions = {
                     IconButton(onClick = {
                         auth.signOut()
-                        navigate.navigate(Routes.LoginScreen.route) }) {
+                        navigate.navigate(Routes.LoginScreen.route)
+                    }) {
 
                         Image(
                             painter = painterResource(R.drawable.ic_exit_session),
@@ -114,7 +116,11 @@ fun ProductContent(
         productsState?.let { productsResponse ->
             LazyColumn {
                 items(productsResponse.products) { product ->
-                    ProductItem(product = product, navigate = navigate, homeViewModel = homeViewModel)
+                    ProductItem(
+                        product = product,
+                        navigate = navigate,
+                        homeViewModel = homeViewModel
+                    )
                 }
             }
         }
@@ -164,9 +170,11 @@ fun ProductItem(product: Products, navigate: NavController, homeViewModel: HomeV
                 .width(30.dp)
                 .height(30.dp)
                 .clickable {
-                    homeViewModel.getInsertProduct(product)
-                    isCartIconVisible = !isCartIconVisible }
-            , alignment = Alignment.BottomEnd
+                    if (isCartIconVisible) {
+                        homeViewModel.getInsertProduct(product)
+                        isCartIconVisible = !isCartIconVisible
+                    }
+                }, alignment = Alignment.BottomEnd
         )
 
 

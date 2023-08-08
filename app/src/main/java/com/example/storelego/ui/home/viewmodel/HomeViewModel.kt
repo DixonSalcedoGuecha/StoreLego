@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getAllProducts() {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 val response = productsRepo.getAllProducts()
                 println(response)
@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getInsertProduct(product: Products){
-        viewModelScope.launch(Dispatchers.IO ) {
+        viewModelScope.launch {
             try {
                 productsRepo.getInsertProduct(product)
 

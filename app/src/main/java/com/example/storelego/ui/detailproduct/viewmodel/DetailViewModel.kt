@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.storelego.model.DetailResponse
+import com.example.storelego.model.Products
 import com.example.storelego.model.ProductsResponse
 import com.example.storelego.repository.ProductsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,17 @@ class DetailViewModel  @Inject constructor(
                 _detailLiveData.postValue(response)
             } catch (e : Exception){
                 Log.e("Exception", "getAllProducts: ${e.printStackTrace()} ", )
+            }
+        }
+    }
+
+    fun getInsertProduct(product: Products){
+        viewModelScope.launch {
+            try {
+                productsRepo.getInsertProduct(product)
+
+            } catch (e:Exception) {
+                Log.e("Insert Produt BD", "getInsertProduct: ${e.printStackTrace()}", )
             }
         }
     }

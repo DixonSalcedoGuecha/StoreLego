@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +23,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -36,7 +37,10 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.storelego.R
 import com.example.storelego.model.DetailResponse
+import com.example.storelego.model.Products
+import com.example.storelego.model.toProduct
 import com.example.storelego.ui.detailproduct.viewmodel.DetailViewModel
+import com.example.storelego.ui.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +58,7 @@ fun DetailScreen(detailViewModel: DetailViewModel, id: Int, navigate: NavHostCon
 
                 actions = {
 
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { navigate.navigate(Routes.ShoppingCartScreen.route)}) {
                         Image(
                             painter = painterResource(R.drawable.ic_shoppin_cart_purple),
                             contentDescription = "Carrito de compras",
@@ -96,7 +100,7 @@ fun Detail(detailViewModel: DetailViewModel, productId: Int?, innerPadding: Padd
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.padding(20.dp))
-                HeaderDetailImage(detailState?.image.toString())
+                HeaderDetailImage(detailState, detailViewModel)
                 Spacer(modifier = Modifier.padding(30.dp))
                 Text(text = detailState?.description.toString())
                 Spacer(modifier = Modifier.padding(20.dp))
@@ -115,12 +119,38 @@ fun Detail(detailViewModel: DetailViewModel, productId: Int?, innerPadding: Padd
 }
 
 @Composable
-fun HeaderDetailImage(image: String) {
+fun HeaderDetailImage(detailState: DetailResponse?, detailViewModel: DetailViewModel) {
+
+    var isCartIconVisible by remember { mutableStateOf(true) }
+
     AsyncImage(
-        model = image,
+        model = detailState?.image.toString(),
         contentDescription = "Image Product",
         modifier = Modifier
             .width(300.dp)
             .height(300.dp)
+    )
+    val cartIcon = if (isCartIconVisible) {
+        painterResource(R.drawable.ic_add_product)
+    } else {
+        painterResource(R.drawable.ic_check_product)
+
+    }
+
+    Image(
+        painter = cartIcon,
+        contentDescription = "Carrito de compras",
+        modifier = Modifier
+            .fillMaxWidth()
+            .width(30.dp)
+            .height(30.dp)
+            .clickable {
+                if(isCartIconVisible){
+                    detailViewModel.getInsertProduct(
+                        detailState?.toProduct() ?:
+                        Products(id = 0, name = "", unitPrice = 0, stock = 0, image = ""))
+                    isCartIconVisible = !isCartIconVisible
+                } }
+        , alignment = Alignment.BottomEnd
     )
 }
