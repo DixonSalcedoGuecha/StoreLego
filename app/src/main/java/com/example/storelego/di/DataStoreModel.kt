@@ -3,6 +3,7 @@ package com.example.storelego.di
 import android.content.Context
 import androidx.room.Room
 import com.example.storelego.datasource.DbBuyDataSource
+import com.example.storelego.datasource.RestBuyDataSource
 import com.example.storelego.datasource.RestDetailDataSource
 import com.example.storelego.datasource.RestProductDataSource
 import com.example.storelego.model.dao.ProductsDao
@@ -43,6 +44,11 @@ object DataStoreModel {
     @Provides
     fun restDetailDataSource(retrofit: Retrofit): RestDetailDataSource =
         retrofit.create(RestDetailDataSource::class.java)
+
+    @Singleton
+    @Provides
+    fun restBuyDataSource(retrofit: Retrofit): RestBuyDataSource =
+        retrofit.create(RestBuyDataSource::class.java)
 
     @Singleton
     @Provides

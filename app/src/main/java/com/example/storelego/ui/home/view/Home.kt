@@ -1,5 +1,6 @@
 package com.example.storelego.ui.home.view
 
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -36,18 +39,37 @@ import com.example.storelego.model.ProductsResponse
 import com.example.storelego.ui.home.viewmodel.HomeViewModel
 import com.example.storelego.ui.navigation.Routes
 import com.example.storelego.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(homeViewModel: HomeViewModel, navigate: NavController) {
     val productsState: ProductsResponse? by homeViewModel.productsLiveData.observeAsState()
+    val auth: FirebaseAuth = Firebase.auth
+
+    DisposableEffect(Unit) {
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigate.navigate(Routes.HomeScreen.route)
+            }
+        }
+        onDispose {
+            onBackPressedCallback.remove()
+        }
+    }
+
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Lista de productos") },
                 actions = {
-                    IconButton(onClick = { navigate.navigate(Routes.LoginScreen.route) }) {
+                    IconButton(onClick = {
+                        auth.signOut()
+                        navigate.navigate(Routes.LoginScreen.route) }) {
+
                         Image(
                             painter = painterResource(R.drawable.ic_exit_session),
                             contentDescription = "Cerrar Sesion",

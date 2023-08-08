@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -46,9 +48,6 @@ import com.example.storelego.ui.theme.Purple40
 import com.example.storelego.R
 import com.example.storelego.ui.login.viewmodel.LoginViewModel
 import com.example.storelego.ui.navigation.Routes
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 
 @ExperimentalMaterial3Api
@@ -56,9 +55,11 @@ import com.google.firebase.ktx.Firebase
 fun LoginScreen(viewModel: LoginViewModel, navigate: NavController) {
 
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
 
         Login(navigate, viewModel)
 
@@ -69,9 +70,9 @@ fun LoginScreen(viewModel: LoginViewModel, navigate: NavController) {
 @Composable
 fun Login(navigate: NavController, viewModel: LoginViewModel) {
 
-    val email : String by  viewModel.email.observeAsState(initial = "")
-    val password : String by  viewModel.password.observeAsState(initial = "")
-    val loginEnable : Boolean by  viewModel.loginEnable.observeAsState(initial = false)
+    val email: String by viewModel.email.observeAsState(initial = "")
+    val password: String by viewModel.password.observeAsState(initial = "")
+    val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -87,7 +88,7 @@ fun Login(navigate: NavController, viewModel: LoginViewModel) {
         Spacer(modifier = Modifier.padding(20.dp))
         PasswordField(password) { viewModel.onLoginChanged(email, it) }
         Spacer(modifier = Modifier.height(40.dp))
-        LoginButton( navigate, loginEnable, viewModel)
+        LoginButton(navigate, loginEnable, viewModel)
         Spacer(modifier = Modifier.height(30.dp))
         ForgotPassword()
         Spacer(modifier = Modifier.height(25.dp))
@@ -108,11 +109,13 @@ fun Login(navigate: NavController, viewModel: LoginViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color, ) {
+fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color) {
     var click by remember { mutableStateOf(false) }
     Surface(
         onClick = onClick,
-        modifier = Modifier.padding(start = 40.dp, end = 40.dp).clickable { click = !click },
+        modifier = Modifier
+            .padding(start = 40.dp, end = 40.dp)
+            .clickable { click = !click },
         shape = RoundedCornerShape(50),
         border = BorderStroke(width = 1.dp, color = Color.Gray),
         color = color
@@ -144,7 +147,11 @@ fun UserRegister(navigate: NavController) {
         modifier = Modifier
             .padding(50.dp),
         onClick = {
-            navigate.navigate(Routes.SingUpScreen.route)
+            navigate.navigate(Routes.SingUpScreen.route) {
+                popUpTo(Routes.SingUpScreen.route) {
+                    inclusive = true
+                }
+            }
         },
         style = TextStyle(
             fontSize = 14.sp,
@@ -159,7 +166,16 @@ fun UserRegister(navigate: NavController) {
 fun LoginButton(navigate: NavController, loginEnabled: Boolean, viewModel: LoginViewModel) {
     Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
         Button(
-            onClick = { viewModel.singIn{navigate.navigate(Routes.HomeScreen.route)} },
+            onClick = {
+
+                viewModel.signIn {
+                    navigate.navigate(Routes.HomeScreen.route) {
+                        popUpTo(Routes.LoginScreen.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            },
             shape = RoundedCornerShape(50.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,6 +183,37 @@ fun LoginButton(navigate: NavController, loginEnabled: Boolean, viewModel: Login
         ) {
             Text(text = "Iniciar Sesión")
         }
+    }
+}
+
+@Composable
+fun LoadingSignIn(viewModel: LoginViewModel) {
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (isLoading) {
+        CircularProgressIndicator(
+            color = Color.Blue,
+            strokeWidth = 5.dp,
+            modifier = Modifier.size(50.dp)
+        )
+    } else {
+        val dismissDialog: () -> Unit = {
+            showDialog = false
+        }
+
+        AlertDialog(
+            onDismissRequest = { dismissDialog() },
+            title = { Text("Diálogo de ejemplo") },
+            text = { Text("Este es un diálogo personalizado en Compose.") },
+            confirmButton = {
+                Button(onClick = {
+                    dismissDialog
+                }) {
+                    Text("ok")
+                }
+            }
+        )
     }
 }
 
@@ -186,12 +233,12 @@ fun ForgotPassword() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordField(password : String , onTextFieldChanged: (String) -> Unit) {
+fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
     TextField(
         label = { Text(text = "Contraseña") },
         value = password,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        onValueChange = {onTextFieldChanged(it) },
+        onValueChange = { onTextFieldChanged(it) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         maxLines = 1,
@@ -201,14 +248,14 @@ fun PasswordField(password : String , onTextFieldChanged: (String) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailField(email : String , onTextFieldChanged: (String) -> Unit) {
+fun EmailField(email: String, onTextFieldChanged: (String) -> Unit) {
 
 
     TextField(
         label = { Text(text = "Correo Electronico") },
         value = email,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        onValueChange = {onTextFieldChanged(it) },
+        onValueChange = { onTextFieldChanged(it) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         maxLines = 1,
@@ -219,5 +266,5 @@ fun EmailField(email : String , onTextFieldChanged: (String) -> Unit) {
 
 @Composable
 fun HeaderImage() {
-    Image(painter = painterResource(id = R.drawable.header_login), contentDescription = "Header" )
+    Image(painter = painterResource(id = R.drawable.header_login), contentDescription = "Header")
 }

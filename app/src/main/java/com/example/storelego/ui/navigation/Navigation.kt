@@ -1,7 +1,10 @@
 package com.example.storelego.ui.navigation
 
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,6 +14,7 @@ import com.example.storelego.ui.home.view.Home
 import com.example.storelego.ui.home.viewmodel.HomeViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
+import androidx.navigation.activity
 import androidx.navigation.navArgument
 import com.example.storelego.ui.detailproduct.view.DetailScreen
 import com.example.storelego.ui.detailproduct.viewmodel.DetailViewModel
@@ -30,7 +34,9 @@ fun Navigation(navController: NavHostController = rememberNavController(),
                shoppingCartViewModel: ShoppingCartViewModel = hiltViewModel()
 ){
     Screen {
-        NavHost(navController = navController, startDestination = if(FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) { Routes.LoginScreen.route} else { Routes.HomeScreen.route} ) {
+        NavHost(navController = navController, startDestination = if(FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+            Routes.LoginScreen.route
+        } else { Routes.HomeScreen.route } ) {
             composable(Routes.LoginScreen.route) {
                 LoginScreen(
                     viewModel = loginViewModel,
@@ -46,6 +52,7 @@ fun Navigation(navController: NavHostController = rememberNavController(),
             }
 
             composable(Routes.HomeScreen.route) {
+
                 Home(homeViewModel = homeViewModel, navigate = navController)
             }
 

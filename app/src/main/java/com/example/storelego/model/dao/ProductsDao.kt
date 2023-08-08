@@ -16,8 +16,11 @@ interface ProductsDao {
     @Query("SELECT * FROM products_table ORDER BY id DESC")
    suspend fun getAllProductsBD(): List<ProductEntity>
 
-    @Query("DELETE FROM products_table WHERE id = :id")
-    fun deleteProduct(id: Int)
+    @Query("DELETE FROM products_table WHERE idProduct = :id")
+    suspend fun deleteProduct(id: Int) : Int
+
+    @Query("DELETE FROM products_table ")
+    suspend fun deleteForBuy()
 
 
 }

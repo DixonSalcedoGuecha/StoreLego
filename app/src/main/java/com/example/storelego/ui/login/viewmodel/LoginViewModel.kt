@@ -7,16 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.storelego.model.Products
+import com.example.storelego.repository.LoginRepository
 import com.example.storelego.repository.ProductsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val productsRepo: ProductsRepository
+    private val loginRepository: LoginRepository
 ) : ViewModel() {
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -30,26 +34,24 @@ class LoginViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private var listProducts : List<Products> = emptyList()
+    private var listProducts: List<Products> = emptyList()
 
     private val auth: FirebaseAuth = Firebase.auth
 
 
-    fun singIn(home: () -> Unit) {
+    fun signIn(home: () -> Unit) {
 
-        return viewModelScope.run {
-            try {
-                auth.signInWithEmailAndPassword(_email.value.toString(), _password.value.toString())
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            home()
-                        } else {
-                            Log.d("Fail singIn", "singIn: ${task.result}")
-                        }
+        viewModelScope.launch {
+            _isLoading.postValue(true)
 
-                    }
-            } catch (e: Exception) {
-                Log.e("Error ", "singIn: $e ")
+            val session = loginRepository.signIn(_email.value.toString(), _password.value.toString())
+            _isLoading.postValue(false)
+            if (session.isNotEmpty()){
+                _isLoading.postValue(true)
+                home()
+                _isLoading.postValue(false)
+            } else {
+                _isLoading.postValue(false)
             }
         }
     }

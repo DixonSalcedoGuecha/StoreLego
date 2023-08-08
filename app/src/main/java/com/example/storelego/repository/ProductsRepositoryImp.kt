@@ -1,5 +1,6 @@
 package com.example.storelego.repository
 
+import com.example.storelego.datasource.RestBuyDataSource
 import com.example.storelego.datasource.RestDetailDataSource
 import com.example.storelego.datasource.RestProductDataSource
 import com.example.storelego.model.DetailResponse
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class ProductsRepositoryImp  @Inject constructor(
     private val productsDataSource: RestProductDataSource,
     private val detailDataSource: RestDetailDataSource,
+    private val restBuyDataSource: RestBuyDataSource,
     private val productsDao: ProductsDao
 ) : ProductsRepository{
     override suspend fun getAllProducts(): ProductsResponse {
@@ -36,6 +38,10 @@ class ProductsRepositoryImp  @Inject constructor(
 
         return productsList
 
+    }
+
+    override suspend fun setBuyProducts(products: ProductsResponse) {
+        restBuyDataSource.setBuyProducts(products)
     }
 
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,11 +31,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.storelego.R
@@ -55,26 +59,18 @@ fun ShoppingCartScreen(shoppingCartViewModel: ShoppingCartViewModel, navigate: N
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = { navigate.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Volver atrás")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver atrás"
+                        )
                     }
                 },
                 title = { Text(text = "Carrito de compras") },
-                actions = {
 
-                    IconButton(onClick = { }) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_shoppin_cart_purple),
-                            contentDescription = "Carrito de compras",
-                            modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-                        )
-                    }
-                }
-            )
+                )
         }, content = { innerPadding ->
 
-            ShoppingCartContent(innerPadding, productsBdState, navigate,shoppingCartViewModel)
+            ShoppingCartContent(innerPadding, productsBdState, navigate, shoppingCartViewModel)
 
         }
     )
@@ -95,46 +91,96 @@ fun ShoppingCartContent(
         horizontalAlignment = Alignment.Start
     ) {
         productsBdState?.let { productsResponse ->
-            LazyColumn(modifier = Modifier.weight(0.85f)) {
+            LazyColumn(modifier = Modifier.weight(0.90f)) {
                 items(productsResponse.products) { product ->
-                    ShoppingProductItem(product = product, navigate = navigate)
+                    ShoppingProductItem(product = product, navigate = navigate, shoppingCartViewModel = shoppingCartViewModel)
                 }
             }
         }
 
-        Spacer(modifier = Modifier.weight(0.15f))
+        Spacer(modifier = Modifier.weight(0.10f))
         DataShopping(productsBdState?.products ?: mutableListOf())
         Spacer(modifier = Modifier.height(16.dp))
-        ButtonBuyProducts(shoppingCartViewModel, productsBdState?.products ?: mutableListOf())
+        ButtonBuyProducts(shoppingCartViewModel, productsBdState ?: ProductsResponse())
     }
 }
 
 @Composable
 fun DataShopping(products: MutableList<Products>) {
     var total: Int = 0
-    for (i in 0 until products.size){
+    for (i in 0 until products.size) {
         total += products[i].unitPrice
     }
-    Text(text = "Total Compra = $ $total pesos", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold), modifier = Modifier.padding(20.dp))
+    Text(
+        text = "Total Compra = $ $total pesos",
+        style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
+        modifier = Modifier.padding(20.dp)
+    )
 }
 
 @Composable
-fun ButtonBuyProducts(shoppingCartViewModel: ShoppingCartViewModel, products: MutableList<Products>) {
-    Box(modifier = Modifier.padding(30.dp, 0.dp, 30.dp, 0.dp))  {
+fun ButtonBuyProducts(shoppingCartViewModel: ShoppingCartViewModel, products: ProductsResponse) {
+    val productsBuy: Boolean? by shoppingCartViewModel.productsBuyState.observeAsState()
+    Box(modifier = Modifier.padding(30.dp, 0.dp, 30.dp, 0.dp)) {
         Button(
-            onClick = {  },
+            onClick = { shoppingCartViewModel.setBuyProduct(products) },
             shape = RoundedCornerShape(50.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp), enabled = products.size > 0
+                .height(50.dp), enabled = products.products.size > 0
         ) {
             Text(text = "Comprar productos")
+        }
+        CustomDialog(showDialog = productsBuy ?: false)
+    }
+}
+
+@Composable
+fun CustomDialog(
+    showDialog: Boolean
+) {
+    if (showDialog) {
+        Dialog(
+            onDismissRequest = {  }
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_confirmation_buy),
+                    contentDescription = "Confirmation of buy",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = "Gracias por tu compra",
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                }
+            }
         }
     }
 }
 
 @Composable
-fun ShoppingProductItem(product: Products, navigate: NavController) {
+fun ShoppingProductItem(
+    product: Products,
+    navigate: NavController,
+    shoppingCartViewModel: ShoppingCartViewModel
+) {
     Row(
 
         modifier = Modifier
@@ -166,7 +212,8 @@ fun ShoppingProductItem(product: Products, navigate: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .width(30.dp)
-                .height(30.dp), alignment = Alignment.BottomEnd
+                .height(30.dp).clickable {shoppingCartViewModel.setDeleteProduct(product.id) },
+            alignment = Alignment.BottomEnd
         )
 
     }
