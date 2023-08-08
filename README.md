@@ -13,6 +13,7 @@ Las librerias cumplen con el proposito de solucionar problemas que a menudo se e
 * Hilt: Inyección de dependencias.
 * Retrofit2: Realiza la estructura para las peticiones a las API's.
 * LiveData: Nos ayuda a crear valores reactivos.
+* Coil: Manejo de imagenes
 
 # Ejecución del proyecto
 
