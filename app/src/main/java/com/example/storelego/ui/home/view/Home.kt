@@ -137,7 +137,7 @@ fun ProductItem(product: Products, navigate: NavController, homeViewModel: HomeV
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End,
+        horizontalArrangement = Arrangement.Start,
 
         ) {
         AsyncImage(
@@ -162,21 +162,22 @@ fun ProductItem(product: Products, navigate: NavController, homeViewModel: HomeV
             painterResource(R.drawable.ic_check_product)
         }
 
-        Image(
-            painter = cartIcon,
-            contentDescription = "Carrito de compras",
-            modifier = Modifier
-                .fillMaxWidth()
-                .width(30.dp)
-                .height(30.dp)
-                .clickable {
-                    if (isCartIconVisible) {
-                        homeViewModel.getInsertProduct(product)
-                        isCartIconVisible = !isCartIconVisible
-                    }
-                }, alignment = Alignment.BottomEnd
-        )
-
+        if (product.stock > 0) {
+            Image(
+                painter = cartIcon,
+                contentDescription = "Carrito de compras",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .width(30.dp)
+                    .height(30.dp)
+                    .clickable {
+                        if (isCartIconVisible) {
+                            homeViewModel.getInsertProduct(product)
+                            isCartIconVisible = !isCartIconVisible
+                        }
+                    }, alignment = Alignment.BottomEnd
+            )
+        }
 
     }
 

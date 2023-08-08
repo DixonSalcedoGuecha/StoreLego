@@ -1,7 +1,10 @@
 package com.example.storelego.ui.login.view
 
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,16 +20,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,10 +47,13 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.storelego.ui.theme.Purple40
 import com.example.storelego.R
 import com.example.storelego.ui.login.viewmodel.LoginViewModel
@@ -54,6 +64,7 @@ import com.example.storelego.ui.navigation.Routes
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navigate: NavController) {
 
+    BackHandler(enabled = false , onBack = { navigate.navigate(Routes.LoginScreen.route) })
 
     Box(
         modifier = Modifier
@@ -66,6 +77,7 @@ fun LoginScreen(viewModel: LoginViewModel, navigate: NavController) {
     }
 
 }
+
 
 @Composable
 fun Login(navigate: NavController, viewModel: LoginViewModel) {
@@ -89,56 +101,12 @@ fun Login(navigate: NavController, viewModel: LoginViewModel) {
         PasswordField(password) { viewModel.onLoginChanged(email, it) }
         Spacer(modifier = Modifier.height(40.dp))
         LoginButton(navigate, loginEnable, viewModel)
-        Spacer(modifier = Modifier.height(30.dp))
-        ForgotPassword()
-        Spacer(modifier = Modifier.height(25.dp))
-        Text(text = "--------- o ---------")
-        Spacer(modifier = Modifier.height(25.dp))
-        SocialMediaButton(
-            onClick = {
-
-            },
-            text = "Continuar con Google",
-            icon = R.drawable.ic_google,
-            color = Color.Black
-        )
+        Spacer(modifier = Modifier.height(90.dp))
         UserRegister(navigate)
 
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SocialMediaButton(onClick: () -> Unit, text: String, icon: Int, color: Color) {
-    var click by remember { mutableStateOf(false) }
-    Surface(
-        onClick = onClick,
-        modifier = Modifier
-            .padding(start = 40.dp, end = 40.dp)
-            .clickable { click = !click },
-        shape = RoundedCornerShape(50),
-        border = BorderStroke(width = 1.dp, color = Color.Gray),
-        color = color
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                modifier = Modifier.size(24.dp),
-                contentDescription = text,
-                tint = Color.Unspecified
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "$text", color = Color.White)
-            click = true
-        }
-    }
-}
 
 @Composable
 fun UserRegister(navigate: NavController) {
@@ -164,86 +132,87 @@ fun UserRegister(navigate: NavController) {
 
 @Composable
 fun LoginButton(navigate: NavController, loginEnabled: Boolean, viewModel: LoginViewModel) {
-    Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-        Button(
-            onClick = {
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
+    val showDialog: Boolean by viewModel.showDialog.observeAsState(initial = false)
 
-                viewModel.signIn {
-                    navigate.navigate(Routes.HomeScreen.route) {
-                        popUpTo(Routes.LoginScreen.route) {
-                            inclusive = true
+    Box(
+        modifier = Modifier
+            .padding(25.dp, 0.dp, 25.dp, 0.dp)
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (!isLoading) {
+            Button(
+                onClick = {
+
+                    viewModel.signIn {
+                        navigate.navigate(Routes.HomeScreen.route) {
+                            popUpTo(Routes.LoginScreen.route) {
+                                inclusive = true
+                            }
                         }
                     }
-                }
-            },
-            shape = RoundedCornerShape(50.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp), enabled = loginEnabled
-        ) {
-            Text(text = "Iniciar Sesión")
+                },
+                shape = RoundedCornerShape(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp), enabled = loginEnabled
+            ) {
+                Text(text = "Iniciar Sesión")
+            }
         }
+        LoadingSignIn(isLoading, showDialog)
     }
 }
 
 @Composable
-fun LoadingSignIn(viewModel: LoginViewModel) {
-    val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
-    var showDialog by remember { mutableStateOf(false) }
+fun LoadingSignIn(isLoading: Boolean, showDialog: Boolean) {
 
     if (isLoading) {
         CircularProgressIndicator(
-            color = Color.Blue,
+            color = Color.LightGray,
             strokeWidth = 5.dp,
-            modifier = Modifier.size(50.dp)
+            modifier = Modifier.size(70.dp)
         )
-    } else {
-        val dismissDialog: () -> Unit = {
-            showDialog = false
-        }
+    } else if (showDialog) {
 
         AlertDialog(
-            onDismissRequest = { dismissDialog() },
-            title = { Text("Diálogo de ejemplo") },
-            text = { Text("Este es un diálogo personalizado en Compose.") },
-            confirmButton = {
-                Button(onClick = {
-                    dismissDialog
-                }) {
-                    Text("ok")
-                }
-            }
+            onDismissRequest = { },
+            title = { Text("¡Error en tu cuenta!") },
+            text = { Text("Si no estas registrado crea una cuenta") },
+            confirmButton = {}
         )
     }
 }
 
-@Composable
-fun ForgotPassword() {
-    ClickableText(
-        text = AnnotatedString("¿Olvidaste tu contraseña?"),
-        onClick = {},
-        style = TextStyle(
-            fontSize = 14.sp,
-            fontFamily = FontFamily.Default,
-            textDecoration = TextDecoration.Underline,
-            color = Purple40
-        )
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordField(password: String, onTextFieldChanged: (String) -> Unit) {
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
     TextField(
         label = { Text(text = "Contraseña") },
         value = password,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         onValueChange = { onTextFieldChanged(it) },
-        modifier = Modifier.fillMaxWidth(),
+        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                Icon(
+                    painterResource(if (isPasswordVisible) R.drawable.ic_visibility_on else R.drawable.ic_visibility_off),
+                    contentDescription = if (isPasswordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp, 0.dp, 20.dp, 0.dp),
         singleLine = true,
         maxLines = 1,
         colors = TextFieldDefaults.textFieldColors()
     )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -256,7 +225,9 @@ fun EmailField(email: String, onTextFieldChanged: (String) -> Unit) {
         value = email,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         onValueChange = { onTextFieldChanged(it) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp, 0.dp, 20.dp, 0.dp),
         singleLine = true,
         maxLines = 1,
         colors = TextFieldDefaults.textFieldColors()

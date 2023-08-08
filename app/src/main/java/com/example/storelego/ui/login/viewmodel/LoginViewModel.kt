@@ -34,7 +34,9 @@ class LoginViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private var listProducts: List<Products> = emptyList()
+    private val _showDialog: MutableLiveData<Boolean> = MutableLiveData()
+    var showDialog: LiveData<Boolean> = _showDialog
+
 
     private val auth: FirebaseAuth = Firebase.auth
 
@@ -44,14 +46,18 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.postValue(true)
 
-            val session = loginRepository.signIn(_email.value.toString(), _password.value.toString())
+            val session =
+                loginRepository.signIn(_email.value.toString(), _password.value.toString())
             _isLoading.postValue(false)
-            if (session.isNotEmpty()){
+            if (session.isNotEmpty()) {
                 _isLoading.postValue(true)
                 home()
                 _isLoading.postValue(false)
             } else {
                 _isLoading.postValue(false)
+                _showDialog.postValue(true)
+                delay(4000)
+                _showDialog.postValue(false)
             }
         }
     }

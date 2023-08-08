@@ -51,14 +51,17 @@ fun DetailScreen(detailViewModel: DetailViewModel, id: Int, navigate: NavHostCon
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = { navigate.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Volver atrás")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver atrás"
+                        )
                     }
                 },
                 title = { Text(text = "Lista de productos") },
 
                 actions = {
 
-                    IconButton(onClick = { navigate.navigate(Routes.ShoppingCartScreen.route)}) {
+                    IconButton(onClick = { navigate.navigate(Routes.ShoppingCartScreen.route) }) {
                         Image(
                             painter = painterResource(R.drawable.ic_shoppin_cart_purple),
                             contentDescription = "Carrito de compras",
@@ -93,14 +96,27 @@ fun Detail(detailViewModel: DetailViewModel, productId: Int?, innerPadding: Padd
     )
     {
 
-        LazyColumn (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             items(1) {
                 Text(
                     text = detailState?.name.toString(),
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.padding(20.dp))
-                HeaderDetailImage(detailState, detailViewModel)
+                HeaderDetailImage(
+                    detailState = detailState ?: DetailResponse(
+                        id = 0,
+                        name = "",
+                        unitPrice = 0,
+                        stock = 0,
+                        image = "",
+                        description = ""
+                    ),
+                    detailViewModel = detailViewModel
+                )
                 Spacer(modifier = Modifier.padding(30.dp))
                 Text(text = detailState?.description.toString())
                 Spacer(modifier = Modifier.padding(20.dp))
@@ -119,12 +135,12 @@ fun Detail(detailViewModel: DetailViewModel, productId: Int?, innerPadding: Padd
 }
 
 @Composable
-fun HeaderDetailImage(detailState: DetailResponse?, detailViewModel: DetailViewModel) {
+fun HeaderDetailImage(detailState: DetailResponse, detailViewModel: DetailViewModel) {
 
     var isCartIconVisible by remember { mutableStateOf(true) }
 
     AsyncImage(
-        model = detailState?.image.toString(),
+        model = detailState.image,
         contentDescription = "Image Product",
         modifier = Modifier
             .width(300.dp)
@@ -136,21 +152,25 @@ fun HeaderDetailImage(detailState: DetailResponse?, detailViewModel: DetailViewM
         painterResource(R.drawable.ic_check_product)
 
     }
+    if (detailState.stock > 0) {
 
-    Image(
-        painter = cartIcon,
-        contentDescription = "Carrito de compras",
-        modifier = Modifier
-            .fillMaxWidth()
-            .width(30.dp)
-            .height(30.dp)
-            .clickable {
-                if(isCartIconVisible){
-                    detailViewModel.getInsertProduct(
-                        detailState?.toProduct() ?:
-                        Products(id = 0, name = "", unitPrice = 0, stock = 0, image = ""))
-                    isCartIconVisible = !isCartIconVisible
-                } }
-        , alignment = Alignment.BottomEnd
-    )
+        Image(
+            painter = cartIcon,
+            contentDescription = "Carrito de compras",
+            modifier = Modifier
+                .fillMaxWidth()
+                .width(30.dp)
+                .height(30.dp)
+                .clickable {
+                    if (isCartIconVisible) {
+                        detailViewModel.getInsertProduct(
+                            detailState.toProduct()
+                        )
+                        isCartIconVisible = !isCartIconVisible
+                    }
+                }, alignment = Alignment.BottomEnd
+        )
+    }
 }
+
+
