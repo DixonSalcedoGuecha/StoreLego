@@ -64,7 +64,7 @@ import com.example.storelego.ui.navigation.Routes
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navigate: NavController) {
 
-    BackHandler(enabled = false , onBack = { navigate.navigate(Routes.LoginScreen.route) })
+    BackHandler(enabled = true , onBack = { })
 
     Box(
         modifier = Modifier
